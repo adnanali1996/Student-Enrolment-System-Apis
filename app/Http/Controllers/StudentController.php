@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Models\Student;
 use Illuminate\Http\Request;
 
@@ -15,6 +16,8 @@ class StudentController extends Controller
     public function index()
     {
         //
+        $students = Student::all();
+        return response()->json($students);
     }
 
     /**
@@ -36,6 +39,15 @@ class StudentController extends Controller
     public function store(Request $request)
     {
         //
+        $validated = $request->validate([
+            'first_name' => 'required|max:25',
+            'last_name' => 'required|max:25',
+        ]);
+        $student =  new Student();
+        $student->first_name = $request->first_name;
+        $student->last_name = $request->last_name;
+        $student->save();
+        return response('Student Inserted Successfully');
     }
 
     /**
@@ -44,9 +56,11 @@ class StudentController extends Controller
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function show(Student $student)
+    public function show($student_id)
     {
         //
+        $student = Student::findorfail($student_id);
+        return response()->json($student);
     }
 
     /**
@@ -67,9 +81,18 @@ class StudentController extends Controller
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Student $student)
+    public function update(Request $request, $student_id)
     {
         //
+        $validated = $request->validate([
+            'first_name' => 'required|max:25',
+            'last_name' => 'required|max:25',
+        ]);
+        $student = Student::findOrFail($student_id);
+        $student->first_name = $request->first_name;
+        $student->last_name = $request->last_name;
+        $student->update();
+        return response('Student Update Successfully');
     }
 
     /**
@@ -78,8 +101,11 @@ class StudentController extends Controller
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Student $student)
+    public function destroy($student_id)
     {
         //
+        $student = Student::findOrFail($student_id);
+        $student->delete();
+        return response('Student Deleted');
     }
 }
